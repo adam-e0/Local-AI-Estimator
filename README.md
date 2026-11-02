@@ -2,6 +2,8 @@
 
 For knowing what open-weight models your machine can run.
 
+[Try it here](https://adam-e0.github.io/Local-AI-Estimator/)
+
 It combines:
 
 - **Artificial Analysis Intelligence Index** scores for open-weight models.
@@ -24,7 +26,7 @@ It combines:
 
 Click any bar to pin its full breakdown below the graph. The pinned panel stays open so the Hugging Face link is clickable.
 
-Everything is stored in URL parameters, so a configured view can be bookmarked:
+Everything is stored in URL parameters, so a [configured view](https://adam-e0.github.io/Local-AI-Estimator/?arch=split&ram=128&vram=24&ssd=2000&moeRam=1&engramSsd=1&ctxOn=1&ctx=32768) can be bookmarked:
 
 ```
 ?arch=split&ram=128&vram=24&ssd=2000&moeRam=1&engramSsd=1&ctxOn=1&ctx=32768
