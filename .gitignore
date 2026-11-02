@@ -1,0 +1,7 @@
+data/raw/
+data/raw/*
+scripts/__pycache__/
+scripts/__pycache__/*
+scripts/
+scripts/*
+.DS_Store

@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+            http-equiv="Cache-Control"
+            content="no-cache, no-store, must-revalidate"
+        />
+        <title>Local AI Estimator</title>
+        <meta
+            name="description"
+            content="Explore open-weight models you can run locally. Scores from the Artificial Analysis Intelligence Index, adjusted for quantization accuracy and memory offloading."
+        />
+        <link rel="stylesheet" href="styles.css?v=13" />
+    </head>
+    <body>
+        <header class="hero">
+            <div class="brand">
+                <div>
+                    <h1>Local AI Estimator</h1>
+                    <p class="tagline">
+                        Find the strongest open model that actually fits your
+                        machine.
+                    </p>
+                </div>
+            </div>
+            <div class="hero-stats" aria-label="Model library totals">
+                <div class="hero-stat">
+                    <strong id="statFamilies">29</strong
+                    ><span>model families</span>
+                </div>
+                <div class="hero-stat">
+                    <strong id="statQuants">238</strong
+                    ><span>quantizations</span>
+                </div>
+                <div class="hero-stat">
+                    <strong id="statBars">267</strong><span>bars</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="card controls" aria-labelledby="controlsTitle">
+                <div class="card-head">
+                    <div>
+                        <h2 id="controlsTitle">Your machine</h2>
+                        <p class="sub">
+                            Set memory to filter. Leave it blank to see every
+                            model.
+                        </p>
+                    </div>
+                    <button id="resetBtn" class="btn ghost" type="button">
+                        Reset
+                    </button>
+                </div>
+
+                <div class="control-grid">
+                    <div class="control-block">
+                        <span class="control-label">Architecture</span>
+                        <div
+                            class="segmented"
+                            id="archToggle"
+                            role="tablist"
+                            aria-label="Architecture"
+                        >
+                            <button
+                                type="button"
+                                data-arch="unified"
+                                class="active"
+                                role="tab"
+                                aria-selected="true"
+                            >
+                                Unified memory
+                            </button>
+                            <button
+                                type="button"
+                                data-arch="split"
+                                role="tab"
+                                aria-selected="false"
+                            >
+                                CPU RAM + VRAM
+                            </button>
+                        </div>
+                        <p class="hint" id="archHint">
+                            Apple Silicon, Strix Halo, Grace Blackwell and other
+                            shared-memory systems.
+                        </p>
+                    </div>
+
+                    <div class="control-block">
+                        <span class="control-label">Memory</span>
+                        <div class="field-row" id="unifiedRow">
+                            <label class="field grow">
+                                <span class="sr-only">Unified memory</span>
+                                <span class="input-with-unit">
+                                    <input
+                                        id="unifiedInput"
+                                        type="number"
+                                        inputmode="decimal"
+                                        min="0"
+                                        step="any"
+                                        placeholder="e.g. 128"
+                                    />
+                                    <select
+                                        id="unifiedUnit"
+                                        aria-label="Unified memory unit"
+                                    >
+                                        <option>GB</option>
+                                        <option>TB</option>
+                                    </select>
+                                </span>
+                            </label>
+                        </div>
+                        <div
+                            class="field-row split-fields"
+                            id="splitRow"
+                            hidden
+                        >
+                            <label class="field grow">
+                                <span class="field-caption">CPU RAM</span>
+                                <span class="input-with-unit">
+                                    <input
+                                        id="ramInput"
+                                        type="number"
+                                        inputmode="decimal"
+                                        min="0"
+                                        step="any"
+                                        placeholder="e.g. 128"
+                                    />
+                                    <select
+                                        id="ramUnit"
+                                        aria-label="CPU RAM unit"
+                                    >
+                                        <option>GB</option>
+                                        <option>TB</option>
+                                    </select>
+                                </span>
+                            </label>
+                            <label class="field grow">
+                                <span class="field-caption">VRAM</span>
+                                <span class="input-with-unit">
+                                    <input
+                                        id="vramInput"
+                                        type="number"
+                                        inputmode="decimal"
+                                        min="0"
+                                        step="any"
+                                        placeholder="e.g. 24"
+                                    />
+                                    <select
+                                        id="vramUnit"
+                                        aria-label="VRAM unit"
+                                    >
+                                        <option>GB</option>
+                                        <option>TB</option>
+                                    </select>
+                                </span>
+                            </label>
+                        </div>
+                        <div class="field-row ssd-field">
+                            <label class="field grow">
+                                <span class="field-caption">SSD</span>
+                                <span class="input-with-unit">
+                                    <input
+                                        id="ssdInput"
+                                        type="number"
+                                        inputmode="decimal"
+                                        min="0"
+                                        step="any"
+                                        placeholder="e.g. 2"
+                                    />
+                                    <select id="ssdUnit" aria-label="SSD unit">
+                                        <option>GB</option>
+                                        <option selected>TB</option>
+                                    </select>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="control-block">
+                        <span class="control-label">Context</span>
+                        <label class="check"
+                            ><input type="checkbox" id="ctxOn" /> Include KV
+                            cache in size</label
+                        >
+                        <div class="field-row">
+                            <label class="field grow">
+                                <span class="sr-only">Context window</span>
+                                <span class="input-with-unit">
+                                    <input
+                                        id="ctxInput"
+                                        type="number"
+                                        inputmode="numeric"
+                                        min="0"
+                                        step="1"
+                                        placeholder="32768"
+                                    />
+                                    <select
+                                        id="ctxUnit"
+                                        aria-label="Context unit"
+                                    >
+                                        <option value="1">tokens</option>
+                                        <option value="1024">k tokens</option>
+                                        <option value="1000000">
+                                            M tokens
+                                        </option>
+                                    </select>
+                                </span>
+                            </label>
+                        </div>
+                        <p class="hint">
+                            KV cache is always counted at FP16/BF16. Quantized
+                            KV is never used.
+                        </p>
+                    </div>
+
+                    <div class="control-block">
+                        <span class="control-label">Offloading</span>
+                        <div class="checks">
+                            <label class="check"
+                                ><input type="checkbox" id="moeSsd" /> MoE
+                                experts on SSD</label
+                            >
+                            <label class="check" id="moeRamWrap"
+                                ><input type="checkbox" id="moeRam" /> MoE
+                                experts in CPU RAM</label
+                            >
+                            <label class="check"
+                                ><input type="checkbox" id="engramSsd" /> Engram
+                                table on SSD</label
+                            >
+                        </div>
+                        <p class="hint" id="offloadHint">
+                            SSD offloading streams experts; only the active
+                            experts stay resident.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="control-foot">
+                    <div class="summary" id="summary" aria-live="polite"></div>
+                    <div class="pill-note" id="dataNote">
+                        No memory configured
+                    </div>
+                </div>
+            </section>
+
+            <section class="card chart-card" aria-labelledby="chartTitle">
+                <div class="chart-head">
+                    <div>
+                        <h2 id="chartTitle">The leaderboard</h2>
+                        <p class="sub" id="chartSubtitle">
+                            Sorted by Artificial Analysis Intelligence Index
+                            after the quant accuracy adjustment.
+                        </p>
+                    </div>
+                    <div class="chart-head-right">
+                        <div class="sort-control">
+                            <label for="sortMode">Sort</label>
+                            <select id="sortMode">
+                                <option value="score">Score: high → low</option>
+                                <option value="sizeAsc">
+                                    Size: small → large
+                                </option>
+                                <option value="sizeDesc">
+                                    Size: large → small
+                                </option>
+                            </select>
+                        </div>
+                        <div
+                            class="legend"
+                            id="legend"
+                            aria-label="Company legend"
+                        ></div>
+                    </div>
+                </div>
+
+                <div class="empty-state" id="emptyState" hidden>
+                    <div class="empty-icon">∅</div>
+                    <h3>Nothing fits those limits</h3>
+                    <p>
+                        Try more memory, a larger SSD, or enable MoE / Engram
+                        offloading.
+                    </p>
+                </div>
+
+                <div class="chart-stage" id="chartStage">
+                    <div class="chart-wrap" id="chartWrap">
+                        <div class="y-axis" id="yAxis" aria-hidden="true"></div>
+                        <div class="plot-scroll" id="plotScroll">
+                            <div class="plot" id="plot">
+                                <div class="grid" id="grid"></div>
+                                <div class="bars" id="bars"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="chart-detail"
+                        id="chartDetail"
+                        hidden
+                        aria-live="polite"
+                    >
+                        <button
+                            class="detail-close"
+                            id="detailClose"
+                            type="button"
+                            aria-label="Close model details"
+                        >
+                            ×
+                        </button>
+                        <div class="chart-detail-body" id="detailBody"></div>
+                    </div>
+                </div>
+
+                <div class="chart-foot">
+                    <span><span class="dot-key base"></span> Base model</span>
+                    <span><span class="dot-key quant"></span> Quantized</span>
+                    <span class="foot-sep">·</span>
+                    <span>Bar height = adjusted score</span>
+                    <span class="foot-sep">·</span>
+                    <span>Size below bar = weights + KV (if enabled)</span>
+                </div>
+            </section>
+
+            <section class="card notes" aria-labelledby="notesTitle">
+                <div class="card-head">
+                    <div>
+                        <h2 id="notesTitle">How this is calculated</h2>
+                        <p class="sub">
+                            A transparent estimate, not a benchmark guarantee.
+                        </p>
+                    </div>
+                </div>
+                <div class="notes-grid">
+                    <div>
+                        <h3>Score</h3>
+                        <p>
+                            Base scores are the Artificial Analysis Intelligence
+                            Index for open-weight models. Models with a
+                            published index use it; a few local models that AA
+                            has not indexed get a clearly marked
+                            <code>~</code> estimate so they can still be
+                            compared. One highest-scoring thinking level is kept
+                            per model family. A quant is scored as
+                            <code>base score × measured accuracy retention</code
+                            >. The percentage above a bar is the score lost to
+                            quantization.
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Size</h3>
+                        <p>
+                            Weight sizes are derived from each model's parameter
+                            groups (dense, routed experts, Engram tables) and
+                            effective bits per weight. Base sizes match the
+                            published safetensors byte totals; quant sizes match
+                            the published GGUF or safetensors download sizes.
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Offloading</h3>
+                        <p>
+                            MoE models only need the active experts resident.
+                            With SSD offload the full expert table lives on SSD
+                            and active experts stream in. Engram lookup tables
+                            can live on SSD independently. Engram currently
+                            applies to DeepSeek V4.1 Flash.
+                        </p>
+                    </div>
+                    <div>
+                        <h3>Accuracy</h3>
+                        <p>
+                            Where providers publish top-1 agreement,
+                            KL-divergence tables, or benchmark retention
+                            (including NVIDIA's NVFP4 evaluation), those
+                            measured values are used. Other quants use a
+                            conservative curve by quant class and are marked as
+                            estimated in the tooltip.
+                        </p>
+                    </div>
+                </div>
+                <p class="source-line">
+                    Sources:
+                    <a
+                        href="https://artificialanalysis.ai/leaderboards/models"
+                        target="_blank"
+                        rel="noopener"
+                        >Artificial Analysis</a
+                    >
+                    ·
+                    <a
+                        href="https://huggingface.co"
+                        target="_blank"
+                        rel="noopener"
+                        >Hugging Face</a
+                    >
+                    ·
+                    <a
+                        href="https://unsloth.ai/docs/basics/unsloth-dynamic-v3.0-gguf"
+                        target="_blank"
+                        rel="noopener"
+                        >Unsloth Dynamic GGUFs</a
+                    >
+                    ·
+                    <a
+                        href="https://huggingface.co/nvidia/DeepSeek-V4.1-Flash-1017-NVFP4"
+                        target="_blank"
+                        rel="noopener"
+                        >NVIDIA NVFP4</a
+                    >. Sizes are decimal GB.
+                </p>
+            </section>
+        </main>
+
+        <div class="tooltip" id="tooltip" hidden></div>
+
+        <script src="data/models.js?v=13"></script>
+        <script src="app.js?v=13"></script>
+    </body>
+</html>
