@@ -58,7 +58,7 @@ The effective bits are calibrated against the published weight files, so a base 
 
 ## Notes and limitations
 
-- The site includes 29 model families and 238 quantizations (267 bars), including the local llama.cpp models from the home server. Models without a published AAI index carry a clearly marked `~` estimate.
+- The site includes 53 model families and 409 quantizations (462 bars), including the local llama.cpp models from the home server. Models without a published AAI index carry a clearly marked `~` estimate.
 - Measured quant accuracy is top-1 token agreement or benchmark retention where the provider published it (including NVIDIA's NVFP4 evaluation). Entries without a published measurement use a conservative quant-class curve and are marked **estimated** in the tooltip.
 - KV-cache sizes are estimates for sizing, not runtime benchmarks. DeepSeek V4.1 reports 890 B/token with FP4 KV; the calculator uses the FP16-equivalent (~3.56 KB/token) because quantized KV is intentionally excluded.
 - NVIDIA's DeepSeek V4.1 Flash 1017 NVFP4 checkpoint (429 GB) is included only because its model card reports measured benchmark results; mean retention versus its MXFP4 source is 99.87% across six benchmarks.
